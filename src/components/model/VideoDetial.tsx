@@ -11,17 +11,18 @@ import {
 import Hls from "hls.js";
 
 interface VideoDetailProps {
-  refresh: boolean | null;
-  setRefresh: React.Dispatch<React.SetStateAction<boolean | null>>;
+  refresh: boolean;
+  setRefresh: React.Dispatch<React.SetStateAction<boolean>>;
 }
-const VideoDetail: React.FC = ({ refresh, setRefresh }) => {
+const VideoDetail: React.FC<VideoDetailProps> = ({ refresh, setRefresh }) => {
   const [isEditing, setIsEditing] = useState(false);
   const { video, isModalVisible, hideModal } = useVideo();
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [showMessage, setShowMessage] = useState<boolean>(false);
-  const [title, setTitle] = useState(null);
-  const [tempTitle, setTempTitle] = useState(null);
+  const [tempTitle, setTempTitle] = useState<string | null>(null);
+  const [title, setTitle] = useState<string | null>(null);
+
   useEffect(() => {
     const timeout = setTimeout(() => {
       setShowMessage(false);
@@ -29,8 +30,8 @@ const VideoDetail: React.FC = ({ refresh, setRefresh }) => {
     return () => clearTimeout(timeout); // Cleanup on unmount
   }, [showMessage, message]);
   useEffect(() => {
-    setTempTitle(video?.title);
-    setTitle(video?.title);
+    //setTempTitle(video?.title);
+    // setTitle(video?.title);
     if (videoRef.current && video?.video_play_url) {
       const hls = new Hls();
 
@@ -78,7 +79,7 @@ const VideoDetail: React.FC = ({ refresh, setRefresh }) => {
       () => {
         setMessage("Failed to copy");
         setShowMessage(true);
-      }
+      },
     );
   };
   const startEditing = () => {
@@ -90,7 +91,7 @@ const VideoDetail: React.FC = ({ refresh, setRefresh }) => {
     setTempTitle(title);
   };
 
-  const saveEdit = async (video_id: number) => {
+  const saveEdit = async (video_id: string) => {
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BAS_API_DOMAIN}/video_edit/${video_id}?title=${tempTitle}`,
@@ -99,7 +100,7 @@ const VideoDetail: React.FC = ({ refresh, setRefresh }) => {
           headers: {
             "api-key": `${process.env.NEXT_PUBLIC_ACCESS_POST_API_KEY}`,
           },
-        }
+        },
       );
       if (response.ok) {
         setIsEditing(false);
@@ -167,20 +168,20 @@ const VideoDetail: React.FC = ({ refresh, setRefresh }) => {
                   className="h-full w-full rounded-md border-none bg-transparent pl-3 pr-2 outline-none focus:outline-none focus:ring-0"
                   placeholder="Direct Play URL"
                   required
-                  value={tempTitle ? tempTitle : tempTitle}
-                  onChange={(e: any) => setTempTitle(e.target.value)}
+                  value={tempTitle ?? ""} // fallback to empty string if null
+                  onChange={(e) => setTempTitle(e.target.value)}
                   readOnly={!isEditing}
                 />
                 {!isEditing ? (
                   <>
                     <div
-                      className="flex w-6 items-center justify-center text-white cursor-pointer"
+                      className="flex w-6 cursor-pointer items-center justify-center text-white"
                       onClick={() => copyToClipboard(`${video.title}`)}
                     >
                       <CopySvg />
                     </div>
                     <div
-                      className="flex w-6 items-center justify-center text-white cursor-pointer"
+                      className="flex w-6 cursor-pointer items-center justify-center text-white"
                       onClick={() => startEditing()}
                     >
                       <Edit />
@@ -189,13 +190,13 @@ const VideoDetail: React.FC = ({ refresh, setRefresh }) => {
                 ) : (
                   <>
                     <div
-                      className="flex w-6 items-center justify-center text-white cursor-pointer"
+                      className="flex w-6 cursor-pointer items-center justify-center text-white"
                       onClick={() => cancelEdit()}
                     >
                       <span className="text-danger">&#10005;</span>
                     </div>
                     <div
-                      className="flex w-6 items-center justify-center text-white cursor-pointer"
+                      className="flex w-6 cursor-pointer items-center justify-center text-white"
                       onClick={() => saveEdit(video.video_id)}
                     >
                       <span className="text-green-300">&#10003;</span>
@@ -298,7 +299,7 @@ const VideoDetail: React.FC = ({ refresh, setRefresh }) => {
                   className="flex w-6 items-center justify-center text-white"
                   onClick={() =>
                     copyToClipboard(
-                      "https://monsterv-uploader.m27.shop/videos/66f4cc9d037543.26789957354056c584e1180906/thumbnail.jpg"
+                      "https://monsterv-uploader.m27.shop/videos/66f4cc9d037543.26789957354056c584e1180906/thumbnail.jpg",
                     )
                   }
                 >

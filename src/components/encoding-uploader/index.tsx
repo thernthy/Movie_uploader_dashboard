@@ -24,7 +24,7 @@ const EncodingUpladerIndex: React.FC = () => {
     { video_id: string; status: string }[]
   >([]);
   const [selectedCollection, setSelectedCollection] = useState<string | null>(
-    null
+    null,
   );
   const [isSelecting, setIsSelecting] = useState(false);
 
@@ -39,7 +39,7 @@ const EncodingUpladerIndex: React.FC = () => {
               "api-key":
                 process.env.NEXT_PUBLIC_ACCESS_GET_API_KEY || "1234567",
             },
-          }
+          },
         );
         const data = await response.json();
         setVideos(data.processed_videos);
@@ -67,7 +67,7 @@ const EncodingUpladerIndex: React.FC = () => {
             headers: {
               "api-key": `${process.env.NEXT_PUBLIC_ACCESS_GET_API_KEY}`,
             },
-          }
+          },
         );
         if (response.ok) {
           const data = await response.json();
@@ -87,13 +87,13 @@ const EncodingUpladerIndex: React.FC = () => {
   };
   // Function to toggle selection
   const toggleSelection = (video: Video) => {
-    const newData = { video_id: video.video_id, status: video.videos_status };
+    const newData = { video_id: video.video_id, status: video.video_status };
     // Check if the video is already selected
     if (!selectedData.find((item) => item.video_id === video.video_id)) {
       setSelectedData((prevData) => [...prevData, newData]);
     } else {
       setSelectedData((prevData) =>
-        prevData.filter((item) => item.video_id !== video.video_id)
+        prevData.filter((item) => item.video_id !== video.video_id),
       );
     }
   };
@@ -145,7 +145,7 @@ const EncodingUpladerIndex: React.FC = () => {
                 "api-key": `${process.env.NEXT_PUBLIC_ACCESS_POST_API_KEY}`,
               },
               body: JSON.stringify({ collection_id: selectedCollection }),
-            }
+            },
           );
 
           // Check if the response was successful
@@ -153,7 +153,7 @@ const EncodingUpladerIndex: React.FC = () => {
             console.log(`Video ${video.video_id} successfully updated.`);
           } else {
             console.error(
-              `Error updating video ${video.video_id}: ${response.statusText}`
+              `Error updating video ${video.video_id}: ${response.statusText}`,
             );
           }
         }
@@ -183,7 +183,7 @@ const EncodingUpladerIndex: React.FC = () => {
               headers: {
                 "api-key": `${process.env.NEXT_PUBLIC_ACCESS_POST_API_KEY}`,
               },
-            }
+            },
           );
 
           // Check if the response was successful
@@ -191,7 +191,7 @@ const EncodingUpladerIndex: React.FC = () => {
             console.log(`Video ${video.video_id} successfully deleted.`);
           } else {
             console.error(
-              `Error deleting video ${video.video_id}: ${response.statusText}`
+              `Error deleting video ${video.video_id}: ${response.statusText}`,
             );
           }
         }
@@ -446,7 +446,7 @@ const EncodingUpladerIndex: React.FC = () => {
                     key={index + 1}
                     seleted={
                       selectedData.some(
-                        (selected) => selected.video_id === item.video_id
+                        (selected) => selected.video_id === item.video_id,
                       )
                         ? true
                         : false

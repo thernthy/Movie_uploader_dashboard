@@ -12,9 +12,10 @@ const Page: React.FC = () => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true); // Add loading state
   const searchParams = useSearchParams();
-  const query = searchParams.get("query") || ""; // Get the search query
-  const pageParam = searchParams.get("_page") || 1; // Get the page query parameter
-  const initialPage = pageParam ? parseInt(pageParam, 10) : 1;
+
+  const query = searchParams?.get("query") ?? "";
+  const pageParam = searchParams?.get("_page") ?? "1";
+  const initialPage = parseInt(pageParam, 10);
 
   const [results, setResults] = useState<Video[]>([]); // Ensure proper type for results
   const [current_page, setPage] = useState<number>(initialPage);
@@ -26,7 +27,7 @@ const Page: React.FC = () => {
       fetch(
         `https://m27.shop/api/search?query=${encodeURIComponent(query)}${
           initialPage ? `&page=${initialPage}` : ""
-        }`
+        }`,
       )
         .then((res) => {
           if (!res.ok) {
@@ -49,11 +50,9 @@ const Page: React.FC = () => {
 
   const handlePagination = (
     event: React.ChangeEvent<unknown>,
-    value: number
+    value: number,
   ) => {
-    router.push(`/search?query=${encodeURIComponent(query)}&_page=${value}`, {
-      shallow: true,
-    });
+    router.push(`/search?query=${encodeURIComponent(query)}&_page=${value}`);
     setPage(value);
     setIsLoading(true);
   };
@@ -71,7 +70,7 @@ const Page: React.FC = () => {
       <DefaultLayout>
         <div className="w-full">
           <h5 className="mb-3 font-semibold text-[#B45454]">
-            No results found for "{query}"
+            No results found for &quot;{query}&quot;
           </h5>
           <ul>
             <li className="leading-relaxed text-[#CD5D5D]">

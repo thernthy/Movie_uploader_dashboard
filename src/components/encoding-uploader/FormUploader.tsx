@@ -1,4 +1,5 @@
 import React, { useState, useRef, DragEvent, ChangeEvent } from "react";
+import Image from "next/image";
 
 interface UploadProgress {
   [key: string]: number;
@@ -171,7 +172,7 @@ function UploadEncoding() {
                         : "",
                   }}
                 >
-                  <img
+                  <Image
                     src={
                       "https://cdn-icons-png.flaticon.com/128/9363/9363460.png"
                     }

@@ -55,7 +55,7 @@ const ChartOne: React.FC<ChartOneProps> = ({
   const [visibleVideoId, setVisibleVideoId] = useState<string | null>(null);
 
   const [selectedCollection, setSelectedCollection] = useState<string | null>(
-    null
+    null,
   );
   const [showCollectionSelector, setShowCollectionSelector] = useState<
     string | null
@@ -64,9 +64,10 @@ const ChartOne: React.FC<ChartOneProps> = ({
     { video_id: string; status: string }[]
   >([]);
   const [isSelecting, setIsSelecting] = useState(false);
+
   useEffect(() => {
     videos.forEach((video) => {
-      if (video.videos_status === "uploaded") {
+      if (video.video_status === "uploaded") {
         startEncoding(video.video_id);
       }
     });
@@ -80,7 +81,7 @@ const ChartOne: React.FC<ChartOneProps> = ({
           headers: {
             "api-key": `${process.env.NEXT_PUBLIC_ACCESS_POST_API_KEY}`,
           },
-        }
+        },
       );
       const data = await response.json();
       setProgress((prev) => ({ ...prev, [video_id]: data.status }));
@@ -125,7 +126,7 @@ const ChartOne: React.FC<ChartOneProps> = ({
             resolution: "720p",
             folder: video_id, // Replace with the actual folder value
           }),
-        }
+        },
       );
       const result = await response.json();
       console.log(`Encoding started for video ${video_id}:`, result);
@@ -139,14 +140,14 @@ const ChartOne: React.FC<ChartOneProps> = ({
   const handleEditionDotClick = (videoId: string) => {
     // Toggle visibility of the tools
     setVisibleVideoId((prevVideoId) =>
-      prevVideoId === videoId ? null : videoId
+      prevVideoId === videoId ? null : videoId,
     );
   };
 
   const handleMoveToCollectionsClick = (videoId: string) => {
     // Toggle visibility of the collection selector
     setShowCollectionSelector((prevVideoId) =>
-      prevVideoId === videoId ? null : videoId
+      prevVideoId === videoId ? null : videoId,
     );
   };
 
@@ -173,7 +174,7 @@ const ChartOne: React.FC<ChartOneProps> = ({
           headers: {
             "api-key": `${process.env.NEXT_PUBLIC_ACCESS_POST_API_KEY}`,
           },
-        }
+        },
       );
       if (response.ok) {
         handleAddVideo();
@@ -196,11 +197,11 @@ const ChartOne: React.FC<ChartOneProps> = ({
           headers: {
             "api-key": `${process.env.NEXT_PUBLIC_ACCESS_GET_API_KEY}`,
           },
-        }
+        },
       );
       if (!response.ok) {
         throw new Error(
-          `Failed to download video ${video_id}: ${response.statusText}`
+          `Failed to download video ${video_id}: ${response.statusText}`,
         );
       }
 
@@ -223,7 +224,7 @@ const ChartOne: React.FC<ChartOneProps> = ({
 
   const handleChange = async (
     event: React.ChangeEvent<HTMLSelectElement>,
-    video_id: string
+    video_id: string,
   ) => {
     const value = event.target.value;
     setSelectedCollection(value);
@@ -238,7 +239,7 @@ const ChartOne: React.FC<ChartOneProps> = ({
             "api-key": `${process.env.NEXT_PUBLIC_ACCESS_POST_API_KEY}`,
           },
           body: JSON.stringify({ collection_id: value }),
-        }
+        },
       );
 
       if (!response.ok) {
@@ -253,7 +254,7 @@ const ChartOne: React.FC<ChartOneProps> = ({
 
   const handleRequestBunnyEncodingStatus = async (
     video_id: string,
-    current_status: string
+    current_status: string,
   ) => {
     if (
       current_status === "encoding" ||
@@ -272,7 +273,7 @@ const ChartOne: React.FC<ChartOneProps> = ({
               "Content-Type": "application/json",
               AccessKey: "ab5cc9e7-fc7d-4793-a05c089b0b48-e6e2-4f11", // Replace with actual API key
             },
-          }
+          },
         );
 
         const data = await response.json();
@@ -295,7 +296,7 @@ const ChartOne: React.FC<ChartOneProps> = ({
                 headers: {
                   "api-key": `${process.env.NEXT_PUBLIC_ACCESS_POST_API_KEY}`,
                 },
-              }
+              },
             );
             break;
           default:
@@ -314,7 +315,7 @@ const ChartOne: React.FC<ChartOneProps> = ({
 
   const requestUpdateVideoProgressingStatus = async (
     video_id: string,
-    new_status: string
+    new_status: string,
   ) => {
     try {
       const response = await fetch(
@@ -325,7 +326,7 @@ const ChartOne: React.FC<ChartOneProps> = ({
             "Content-Type": "application/json",
             "api-key": `${process.env.NEXT_PUBLIC_ACCESS_POST_API_KEY}`,
           },
-        }
+        },
       );
 
       if (!response.ok) {
@@ -338,11 +339,11 @@ const ChartOne: React.FC<ChartOneProps> = ({
   useEffect(() => {
     videos.forEach((video) => {
       if (
-        video.videos_status === "processing" ||
-        video.videos_status === "trancoding" ||
-        video.videos_status === "encoding"
+        video.video_status === "processing" ||
+        video.video_status === "trancoding" ||
+        video.video_status === "encoding"
       ) {
-        handleRequestBunnyEncodingStatus(video.video_id, video.videos_status);
+        handleRequestBunnyEncodingStatus(video.video_id, video.video_status);
       }
     });
   }, [videos]);
@@ -355,14 +356,14 @@ const ChartOne: React.FC<ChartOneProps> = ({
         headers: {
           "api-key": `${process.env.NEXT_PUBLIC_ACCESS_POST_API_KEY}`,
         },
-      }
+      },
     );
   };
 
   const handleDetail = (
     vide_id: string,
     video_title: string,
-    video_play_url: string
+    video_play_url: string,
   ) => {
     setVideo({
       video_id: vide_id,
@@ -373,14 +374,14 @@ const ChartOne: React.FC<ChartOneProps> = ({
 
   // Function to toggle selection
   const toggleSelection = (video: Video) => {
-    const newData = { video_id: video.video_id, status: video.videos_status };
+    const newData = { video_id: video.video_id, status: video.video_status };
     console.log(newData);
     // Check if the video is already selected
     if (!selectedData.find((item) => item.video_id === video.video_id)) {
       setSelectedData((prevData) => [...prevData, newData]);
     } else {
       setSelectedData((prevData) =>
-        prevData.filter((item) => item.video_id !== video.video_id)
+        prevData.filter((item) => item.video_id !== video.video_id),
       );
     }
   };
@@ -432,7 +433,7 @@ const ChartOne: React.FC<ChartOneProps> = ({
                 "api-key": `${process.env.NEXT_PUBLIC_ACCESS_POST_API_KEY}`,
               },
               body: JSON.stringify({ collection_id: selectedCollection }),
-            }
+            },
           );
 
           // Check if the response was successful
@@ -440,7 +441,7 @@ const ChartOne: React.FC<ChartOneProps> = ({
             console.log(`Video ${video.video_id} successfully updated.`);
           } else {
             console.error(
-              `Error updating video ${video.video_id}: ${response.statusText}`
+              `Error updating video ${video.video_id}: ${response.statusText}`,
             );
           }
         }
@@ -470,7 +471,7 @@ const ChartOne: React.FC<ChartOneProps> = ({
               headers: {
                 "api-key": `${process.env.NEXT_PUBLIC_ACCESS_POST_API_KEY}`,
               },
-            }
+            },
           );
 
           // Check if the response was successful
@@ -478,7 +479,7 @@ const ChartOne: React.FC<ChartOneProps> = ({
             console.log(`Video ${video.video_id} successfully deleted.`);
           } else {
             console.error(
-              `Error deleting video ${video.video_id}: ${response.statusText}`
+              `Error deleting video ${video.video_id}: ${response.statusText}`,
             );
           }
         }
@@ -773,7 +774,7 @@ const ChartOne: React.FC<ChartOneProps> = ({
                             handleDetail(
                               video.video_id,
                               video.title,
-                              `https://m27player.b-cdn.net/${video.video_id}/video.m3u8`
+                              `https://m27player.b-cdn.net/${video.video_id}/video.m3u8`,
                             )
                           }
                           className=" flex w-full cursor-pointer flex-row items-start justify-start gap-2 rounded-sm px-2 py-0.5 hover:bg-white hover:shadow-card dark:hover:bg-boxdark"
@@ -817,6 +818,7 @@ const ChartOne: React.FC<ChartOneProps> = ({
                                 >
                                   {Collection?.map((item) => (
                                     <option
+                                      key={item.collection_id} // ✅ Add this line
                                       className="bg-boxdark"
                                       value={item.collection_id}
                                     >
@@ -872,7 +874,7 @@ const ChartOne: React.FC<ChartOneProps> = ({
                         handleDetail(
                           video.video_id,
                           video.title,
-                          `https://m27player.b-cdn.net/${video.video_id}/video.m3u8`
+                          `https://m27player.b-cdn.net/${video.video_id}/video.m3u8`,
                         )
                       }
                     >
@@ -930,7 +932,7 @@ const ChartOne: React.FC<ChartOneProps> = ({
                       </>
                     )}
                     {selectedData.some(
-                      (item) => item.video_id === video.video_id
+                      (item) => item.video_id === video.video_id,
                     ) && (
                       <div
                         className="absolute -left-1 -top-1 z-99 rounded-full bg-emerald-300 px-1 py-1 text-white"
