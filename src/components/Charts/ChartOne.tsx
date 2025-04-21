@@ -114,26 +114,26 @@ const ChartOne: React.FC<ChartOneProps> = ({
   };
 
   // Effect to handle mouse move when selecting
-  useEffect(() => {
-    const handleMouseMove = (event: MouseEvent) => {
-      if (isSelecting) {
-        const target = event.target as HTMLElement;
-        const videoId = target.getAttribute("data-video-id");
-        if (videoId) {
-          const video = videos.find((v) => v.video_id === videoId);
-          if (video) {
-            toggleSelection(video);
-          }
-        }
-      }
-    };
+  // useEffect(() => {
+  //   const handleMouseMove = (event: MouseEvent) => {
+  //     if (isSelecting) {
+  //       const target = event.target as HTMLElement;
+  //       const videoId = target.getAttribute("data-video-id");
+  //       if (videoId) {
+  //         const video = videos.find((v) => v.video_id === videoId);
+  //         if (video) {
+  //           toggleSelection(video);
+  //         }
+  //       }
+  //     }
+  //   };
 
-    document.addEventListener("mousemove", handleMouseMove);
+  //   document.addEventListener("mousemove", handleMouseMove);
 
-    return () => {
-      document.removeEventListener("mousemove", handleMouseMove);
-    };
-  }, [isSelecting, videos]);
+  //   return () => {
+  //     document.removeEventListener("mousemove", handleMouseMove);
+  //   };
+  // }, [isSelecting, videos]);
 
   //handle edition tools
   const handleEditionDotClick = (videoId: string) => {
@@ -368,50 +368,46 @@ const ChartOne: React.FC<ChartOneProps> = ({
       video_play_url: video_play_url, // Replace with the actual video URL
     });
   };
-  const toggleSelection = useCallback((video: Video) => {
-    setSelectedData((prevData) => {
-      const exists = prevData.find((item) => item.video_id === video.video_id);
-      if (exists) {
-        return prevData.filter((item) => item.video_id !== video.video_id);
-      } else {
-        const newData = {
-          video_id: video.video_id,
-          status: video.video_status,
-        };
-        console.log(newData);
-        return [...prevData, newData];
-      }
-    });
-  }, []);
-
-  useEffect(() => {
-    // Any logic using toggleSelection if needed
-  }, [videos, toggleSelection]); // ✅ Now toggleSelection is stable and dependency is fine
+  // const toggleSelection = useCallback((video: Video) => {
+  //   setSelectedData((prevData) => {
+  //     const exists = prevData.find((item) => item.video_id === video.video_id);
+  //     if (exists) {
+  //       return prevData.filter((item) => item.video_id !== video.video_id);
+  //     } else {
+  //       const newData = {
+  //         video_id: video.video_id,
+  //         status: video.video_status,
+  //       };
+  //       console.log(newData);
+  //       return [...prevData, newData];
+  //     }
+  //   });
+  // }, []);
 
   // Mouse event handlers
-  const handleMouseDown = (video: Video) => {
-    setIsSelecting(true);
-    toggleSelection(video);
-  };
-  const handleMouseEnter = (video: Video) => {
-    if (isSelecting) {
-      toggleSelection(video);
-    }
-  };
+  // const handleMouseDown = (video: Video) => {
+  //   setIsSelecting(true);
+  //   toggleSelection(video);
+  // };
+  // const handleMouseEnter = (video: Video) => {
+  //   if (isSelecting) {
+  //     toggleSelection(video);
+  //   }
+  // };
   const handleMouseUp = () => {
     setIsSelecting(false);
   };
 
   // Touch event handlers
-  const handleTouchStart = (video: Video) => {
-    setIsSelecting(true);
-    toggleSelection(video);
-  };
-  const handleTouchMove = (video: Video) => {
-    if (isSelecting) {
-      toggleSelection(video);
-    }
-  };
+  // const handleTouchStart = (video: Video) => {
+  //   setIsSelecting(true);
+  //   toggleSelection(video);
+  // };
+  // const handleTouchMove = (video: Video) => {
+  //   if (isSelecting) {
+  //     toggleSelection(video);
+  //   }
+  // };
 
   const handleTouchEnd = () => {
     setIsSelecting(false);
@@ -732,14 +728,14 @@ const ChartOne: React.FC<ChartOneProps> = ({
                   <div className="relative" key={video.video_id}>
                     <div className="video_card relative z-99 h-50 w-full rounded-md bg-white text-xs font-medium text-black shadow-card hover:bg-white hover:shadow-card dark:bg-boxdark dark:text-white dark:hover:bg-boxdark">
                       <div
-                        onMouseDown={() => handleMouseDown(video)}
-                        onMouseEnter={() => handleMouseEnter(video)}
-                        onMouseUp={handleMouseUp}
-                        onClick={() => {
-                          toggleSelection(video);
-                        }}
-                        onTouchStart={() => handleTouchStart(video)}
-                        onTouchMove={() => handleTouchMove(video)}
+                        // onMouseDown={() => handleMouseDown(video)}
+                        // onMouseEnter={() => handleMouseEnter(video)}
+                        // onMouseUp={handleMouseUp}
+                        // onClick={() => {
+                        //   //toggleSelection(video);
+                        // }}
+                        // onTouchStart={() => handleTouchStart(video)}
+                        // onTouchMove={() => handleTouchMove(video)}
                         onTouchEnd={handleTouchEnd}
                         style={{
                           backgroundImage: `url(${
