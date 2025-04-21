@@ -15,7 +15,6 @@ const Header = (props: {
 
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Navigate to the search page with the query parameter
     router.push(`/search?query=${encodeURIComponent(query)}`);
   };
 

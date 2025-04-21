@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import CircularProgress from "@mui/material/CircularProgress";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -64,6 +64,29 @@ const ChartOne: React.FC<ChartOneProps> = ({
     { video_id: string; status: string }[]
   >([]);
   const [isSelecting, setIsSelecting] = useState(false);
+  const startEncoding = useCallback(async (video_id: string) => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BAS_API_DOMAIN}/api_poster/google_api/encode_video/${video_id}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "api-key": `${process.env.NEXT_PUBLIC_ACCESS_POST_API_KEY}`,
+          },
+          body: JSON.stringify({
+            resolution: "720p",
+            folder: video_id, // Replace with the actual folder value
+          }),
+        },
+      );
+      const result = await response.json();
+      console.log(`Encoding started for video ${video_id}:`, result);
+      fetchProgress(video_id); // Fetch progress after starting encoding
+    } catch (error) {
+      console.error(`Failed to start encoding for video ${video_id}:`, error);
+    }
+  }, []); // Only define once, if startEncoding is stable across renders
 
   useEffect(() => {
     videos.forEach((video) => {
@@ -71,7 +94,7 @@ const ChartOne: React.FC<ChartOneProps> = ({
         startEncoding(video.video_id);
       }
     });
-  }, [videos]);
+  }, [videos, startEncoding]); // Dependency on the memoized startEncoding
 
   const fetchProgress = async (video_id: string) => {
     try {
@@ -111,30 +134,6 @@ const ChartOne: React.FC<ChartOneProps> = ({
       document.removeEventListener("mousemove", handleMouseMove);
     };
   }, [isSelecting, videos]);
-
-  const startEncoding = async (video_id: string) => {
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BAS_API_DOMAIN}/api_poster/google_api/encode_video/${video_id}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "api-key": `${process.env.NEXT_PUBLIC_ACCESS_POST_API_KEY}`,
-          },
-          body: JSON.stringify({
-            resolution: "720p",
-            folder: video_id, // Replace with the actual folder value
-          }),
-        },
-      );
-      const result = await response.json();
-      console.log(`Encoding started for video ${video_id}:`, result);
-      fetchProgress(video_id); // Fetch progress after starting encoding
-    } catch (error) {
-      console.error(`Failed to start encoding for video ${video_id}:`, error);
-    }
-  };
 
   //handle edition tools
   const handleEditionDotClick = (videoId: string) => {
@@ -252,66 +251,64 @@ const ChartOne: React.FC<ChartOneProps> = ({
     }
   };
 
-  const handleRequestBunnyEncodingStatus = async (
-    video_id: string,
-    current_status: string,
-  ) => {
-    if (
-      current_status === "encoding" ||
-      current_status === "processing" ||
-      current_status === "trancoding"
-    ) {
-      try {
-        // Wait for 1 second before making the request
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+  const handleRequestBunnyEncodingStatus = useCallback(
+    async (video_id: string, current_status: string) => {
+      if (
+        current_status === "encoding" ||
+        current_status === "processing" ||
+        current_status === "trancoding"
+      ) {
+        try {
+          await new Promise((resolve) => setTimeout(resolve, 1000));
 
-        const response = await fetch(
-          `https://video.bunnycdn.com/library/293721/videos/${video_id}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              AccessKey: "ab5cc9e7-fc7d-4793-a05c089b0b48-e6e2-4f11", // Replace with actual API key
-            },
-          },
-        );
-
-        const data = await response.json();
-        const bunnyStatus = data.encodeProgress;
-        let newStatus = "0"; // Adjust according to your actual response structure
-
-        switch (true) {
-          case bunnyStatus <= 0:
-            newStatus = "processing";
-            break;
-          case bunnyStatus > 0 && bunnyStatus < 100:
-            newStatus = "trancoding";
-            break;
-          case bunnyStatus === 100:
-            newStatus = "downloading";
-            await fetch(
-              `${process.env.NEXT_PUBLIC_BAS_API_DOMAIN}/api_poster/bunny-encoded-file-downloading/${video_id}`,
-              {
-                method: "GET",
-                headers: {
-                  "api-key": `${process.env.NEXT_PUBLIC_ACCESS_POST_API_KEY}`,
-                },
+          const response = await fetch(
+            `https://video.bunnycdn.com/library/293721/videos/${video_id}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                AccessKey: "ab5cc9e7-fc7d-4793-a05c089b0b48-e6e2-4f11",
               },
-            );
-            break;
-          default:
-            newStatus = "unknown"; // Handle other statuses if needed
-        }
+            },
+          );
 
-        if (newStatus !== current_status) {
-          // Call function to update status in local database
-          requestUpdateVideoProgressingStatus(video_id, newStatus);
+          const data = await response.json();
+          const bunnyStatus = data.encodeProgress;
+          let newStatus = "0";
+
+          switch (true) {
+            case bunnyStatus <= 0:
+              newStatus = "processing";
+              break;
+            case bunnyStatus > 0 && bunnyStatus < 100:
+              newStatus = "trancoding";
+              break;
+            case bunnyStatus === 100:
+              newStatus = "downloading";
+              await fetch(
+                `${process.env.NEXT_PUBLIC_BAS_API_DOMAIN}/api_poster/bunny-encoded-file-downloading/${video_id}`,
+                {
+                  method: "GET",
+                  headers: {
+                    "api-key": `${process.env.NEXT_PUBLIC_ACCESS_POST_API_KEY}`,
+                  },
+                },
+              );
+              break;
+            default:
+              newStatus = "unknown";
+          }
+
+          if (newStatus !== current_status) {
+            requestUpdateVideoProgressingStatus(video_id, newStatus);
+          }
+        } catch (error) {
+          console.error("Failed to fetch Bunny video status:", error);
         }
-      } catch (error) {
-        console.error("Failed to fetch Bunny video status:", error);
       }
-    }
-  };
+    },
+    [], // You can include dependencies like requestUpdateVideoProgressingStatus here if it's defined inside the component
+  );
 
   const requestUpdateVideoProgressingStatus = async (
     video_id: string,
@@ -346,7 +343,7 @@ const ChartOne: React.FC<ChartOneProps> = ({
         handleRequestBunnyEncodingStatus(video.video_id, video.video_status);
       }
     });
-  }, [videos]);
+  }, [videos, handleRequestBunnyEncodingStatus]);
 
   const handleRedownloading = async (video_id: string) => {
     await fetch(
@@ -371,33 +368,36 @@ const ChartOne: React.FC<ChartOneProps> = ({
       video_play_url: video_play_url, // Replace with the actual video URL
     });
   };
+  const toggleSelection = useCallback((video: Video) => {
+    setSelectedData((prevData) => {
+      const exists = prevData.find((item) => item.video_id === video.video_id);
+      if (exists) {
+        return prevData.filter((item) => item.video_id !== video.video_id);
+      } else {
+        const newData = {
+          video_id: video.video_id,
+          status: video.video_status,
+        };
+        console.log(newData);
+        return [...prevData, newData];
+      }
+    });
+  }, []);
 
-  // Function to toggle selection
-  const toggleSelection = (video: Video) => {
-    const newData = { video_id: video.video_id, status: video.video_status };
-    console.log(newData);
-    // Check if the video is already selected
-    if (!selectedData.find((item) => item.video_id === video.video_id)) {
-      setSelectedData((prevData) => [...prevData, newData]);
-    } else {
-      setSelectedData((prevData) =>
-        prevData.filter((item) => item.video_id !== video.video_id),
-      );
-    }
-  };
+  useEffect(() => {
+    // Any logic using toggleSelection if needed
+  }, [videos, toggleSelection]); // ✅ Now toggleSelection is stable and dependency is fine
 
   // Mouse event handlers
   const handleMouseDown = (video: Video) => {
     setIsSelecting(true);
     toggleSelection(video);
   };
-
   const handleMouseEnter = (video: Video) => {
     if (isSelecting) {
       toggleSelection(video);
     }
   };
-
   const handleMouseUp = () => {
     setIsSelecting(false);
   };
@@ -407,7 +407,6 @@ const ChartOne: React.FC<ChartOneProps> = ({
     setIsSelecting(true);
     toggleSelection(video);
   };
-
   const handleTouchMove = (video: Video) => {
     if (isSelecting) {
       toggleSelection(video);
