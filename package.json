@@ -31,26 +31,27 @@
     "react-dom": "^19",
     "swiper": "^11.2.6",
     "systeminformation": "^5.25.11",
+    "tailwindcss": "^4.1.4",
     "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@eslint/config-array": "^0.20.0",
     "@eslint/object-schema": "^2.1.6",
+    "@tailwindcss/postcss": "^4.1.4",
     "@types/busboy": "^1.5.4",
     "@types/formidable": "^3.4.5",
     "@types/node": "22.14.1",
     "@types/react": "19.1.2",
     "@types/react-dom": "^19.1.2",
     "@types/uuid": "^10.0.0",
-    "autoprefixer": "^10.4.21",
+    "autoprefixer": "^10.4.14",
     "eslint": "^9.25.0",
     "eslint-config-next": "^15.3.1",
     "glob": "^11.0.1",
-    "postcss": "^8",
+    "postcss": "^8.5.3",
     "prettier": "^3.5.3",
     "prettier-plugin-tailwindcss": "^0.6.11",
     "rimraf": "^6.0.1",
-    "tailwindcss": "^4.1.4",
     "typescript": "5.8.3"
   }
 }
