@@ -18,7 +18,7 @@ const UploadingVideos: React.FC<UploadVideoFormProps> = ({
 }) => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [uploadProgress, setUploadProgress] = useState<Record<string, number>>(
-    {}
+    {},
   );
   const [response, setResponse] = useState<UploadResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -42,7 +42,7 @@ const UploadingVideos: React.FC<UploadVideoFormProps> = ({
             AccessKey: "ab5cc9e7-fc7d-4793-a05c089b0b48-e6e2-4f11", // Replace with actual API key
           },
           body: JSON.stringify(createVideoData),
-        }
+        },
       );
 
       const data = await response.json();
@@ -94,12 +94,12 @@ const UploadingVideos: React.FC<UploadVideoFormProps> = ({
                 "Content-Type": "application/json",
                 "api-key": "123456",
               },
-            }
+            },
           );
 
           if (!createVideoResponse.ok) {
             throw new Error(
-              `Failed to create video entry: ${createVideoResponse.statusText}`
+              `Failed to create video entry: ${createVideoResponse.statusText}`,
             );
           }
 
@@ -122,12 +122,12 @@ const UploadingVideos: React.FC<UploadVideoFormProps> = ({
 
     xhr.open(
       "PUT",
-      `https://video.bunnycdn.com/library/293721/videos/${videoId}`
+      `https://video.bunnycdn.com/library/293721/videos/${videoId}`,
     );
     xhr.setRequestHeader("Content-Type", "video/mp4");
     xhr.setRequestHeader(
       "AccessKey",
-      "ab5cc9e7-fc7d-4793-a05c089b0b48-e6e2-4f11"
+      "ab5cc9e7-fc7d-4793-a05c089b0b48-e6e2-4f11",
     ); // Replace with actual API key
 
     setXhrInstances((prevInstances) => ({
@@ -139,11 +139,11 @@ const UploadingVideos: React.FC<UploadVideoFormProps> = ({
   };
 
   const handleFileInputChange = async (
-    event: ChangeEvent<HTMLInputElement>
+    event: ChangeEvent<HTMLInputElement>,
   ) => {
     if (event.target.files) {
       const files = Array.from(event.target.files).filter(
-        (file) => file.type === "video/mp4" || file.type === "video/x-matroska"
+        (file) => file.type === "video/mp4" || file.type === "video/x-matroska",
       );
 
       setSelectedFiles((prevFiles) => [...prevFiles, ...files]);

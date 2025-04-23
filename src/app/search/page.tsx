@@ -26,7 +26,7 @@ const Page: React.FC = () => {
       fetch(
         `https://m27.shop/api/search?query=${encodeURIComponent(query)}${
           initialPage ? `&page=${initialPage}` : ""
-        }`
+        }`,
       )
         .then((res) => {
           if (!res.ok) {
@@ -49,11 +49,9 @@ const Page: React.FC = () => {
 
   const handlePagination = (
     event: React.ChangeEvent<unknown>,
-    value: number
+    value: number,
   ) => {
-    router.push(`/search?query=${encodeURIComponent(query)}&_page=${value}`, {
-      shallow: true,
-    });
+    router.push(`/search?query=${encodeURIComponent(query)}&_page=${value}`);
     setPage(value);
     setIsLoading(true);
   };
@@ -71,7 +69,7 @@ const Page: React.FC = () => {
       <DefaultLayout>
         <div className="w-full">
           <h5 className="mb-3 font-semibold text-[#B45454]">
-            No results found for "{query}"
+            No results found for: {query}
           </h5>
           <ul>
             <li className="leading-relaxed text-[#CD5D5D]">
