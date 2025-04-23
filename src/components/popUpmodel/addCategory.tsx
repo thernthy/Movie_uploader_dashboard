@@ -1,5 +1,4 @@
 import { useState } from "react";
-import Image from "next/image";
 
 const AcategoryPopModel = () => {
   const [modal, setModal] = useState(false);
@@ -27,7 +26,7 @@ const AcategoryPopModel = () => {
           <div className="main">
             <div className="overlay h-1/3 w-9/12 rounded-md px-2 py-2 md:w-4/12">
               <div className="logo mb-1 flex w-full justify-center">
-                <Image
+                <img
                   src="https://cdn-icons-png.flaticon.com/128/7931/7931221.png"
                   alt=""
                   style={{ width: "10%", height: "auto" }}

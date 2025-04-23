@@ -33,7 +33,7 @@ const SearchPage: React.FC<SearchPageProps> = ({
     { video_id: string; status: string }[]
   >([]);
   const [selectedCollection, setSelectedCollection] = useState<string | null>(
-    null,
+    null
   );
   const [isSelecting, setIsSelecting] = useState(false);
 
@@ -46,7 +46,7 @@ const SearchPage: React.FC<SearchPageProps> = ({
             headers: {
               "api-key": `${process.env.NEXT_PUBLIC_ACCESS_GET_API_KEY}`,
             },
-          },
+          }
         );
         if (response.ok) {
           const data = await response.json();
@@ -73,7 +73,7 @@ const SearchPage: React.FC<SearchPageProps> = ({
       setSelectedData((prevData) => [...prevData, newData]);
     } else {
       setSelectedData((prevData) =>
-        prevData.filter((item) => item.video_id !== video.video_id),
+        prevData.filter((item) => item.video_id !== video.video_id)
       );
     }
   };
@@ -125,7 +125,7 @@ const SearchPage: React.FC<SearchPageProps> = ({
                 "api-key": `${process.env.NEXT_PUBLIC_ACCESS_POST_API_KEY}`,
               },
               body: JSON.stringify({ collection_id: selectedCollection }),
-            },
+            }
           );
 
           // Check if the response was successful
@@ -133,7 +133,7 @@ const SearchPage: React.FC<SearchPageProps> = ({
             console.log(`Video ${video.video_id} successfully updated.`);
           } else {
             console.error(
-              `Error updating video ${video.video_id}: ${response.statusText}`,
+              `Error updating video ${video.video_id}: ${response.statusText}`
             );
           }
         }
@@ -163,7 +163,7 @@ const SearchPage: React.FC<SearchPageProps> = ({
               headers: {
                 "api-key": `${process.env.NEXT_PUBLIC_ACCESS_POST_API_KEY}`,
               },
-            },
+            }
           );
 
           // Check if the response was successful
@@ -171,7 +171,7 @@ const SearchPage: React.FC<SearchPageProps> = ({
             console.log(`Video ${video.video_id} successfully deleted.`);
           } else {
             console.error(
-              `Error deleting video ${video.video_id}: ${response.statusText}`,
+              `Error deleting video ${video.video_id}: ${response.statusText}`
             );
           }
         }
@@ -443,7 +443,7 @@ const SearchPage: React.FC<SearchPageProps> = ({
                     key={index + 1}
                     seleted={
                       selectedData.some(
-                        (selected) => selected.video_id === item.video_id,
+                        (selected) => selected.video_id === item.video_id
                       )
                         ? true
                         : false
@@ -465,7 +465,7 @@ const SearchPage: React.FC<SearchPageProps> = ({
           </Swiper>
         </div>
       </div>
-      <VideoDetail refresh={refresh} setRefresh={setRefresh} />
+      <VideoDetail />
     </>
   );
 };

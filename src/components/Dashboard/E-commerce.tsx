@@ -45,7 +45,7 @@ const ECommerce: React.FC = () => {
             headers: {
               "api-key": `${process.env.NEXT_PUBLIC_ACCESS_GET_API_KEY}`,
             },
-          },
+          }
         );
         if (response.ok) {
           const data = await response.json();
@@ -95,7 +95,7 @@ const ECommerce: React.FC = () => {
               "api-key":
                 process.env.NEXT_PUBLIC_ACCESS_GET_API_KEY || "1234567",
             },
-          },
+          }
         );
         const data = await response.json();
         setVideos(data.processed_videos);
@@ -129,7 +129,6 @@ const ECommerce: React.FC = () => {
             title={`${item.total_files} files`}
             total={item.name}
             rate=""
-            key={item.name}
             modleClick={() => handleCleckedCategory(item.collection_id)}
           >
             <svg

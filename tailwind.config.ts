@@ -333,11 +333,3 @@ const config: Config = {
   plugins: [],
 };
 export default config;
-
-module.exports = {
-  plugins: {
-    tailwindcss: {},
-    autoprefixer: {},
-    '@tailwindcss/postcss': {}, // Add this line
-  },
-}

@@ -1,6 +1,4 @@
 import React, { useState } from "react";
-import Image from "next/image";
-
 import { useHandleCollections } from "@/app/appContext/popUpCategoryAdd"; // Import the context
 type ComponentPropType = {
   HandleRefresh: () => void;
@@ -59,7 +57,7 @@ const PopAddcollection: React.FC<ComponentPropType> = ({ HandleRefresh }) => {
     >
       <div className="modal-content flex max-h-125 min-h-115 min-w-59 flex-col items-center justify-center gap-10 rounded-md bg-black px-6 py-6 dark:bg-white md:min-w-171.5">
         <div className="logo mb-1 flex w-full flex-col items-center justify-center gap-4 text-center">
-          <Image
+          <img
             src="https://cdn-icons-png.flaticon.com/128/7931/7931221.png"
             alt="logo"
             style={{ width: "10%", height: "auto" }}

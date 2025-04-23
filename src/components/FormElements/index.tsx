@@ -7,7 +7,7 @@ import CheckboxThree from "@/components/Checkboxes/CheckboxThree";
 import CheckboxTwo from "@/components/Checkboxes/CheckboxTwo";
 import SwitcherFour from "@/components/Switchers/SwitcherFour";
 import SwitcherOne from "@/components/Switchers/SwitcherOne";
-// import SwitcherThree from "@/components/Switchers/SwitcherThree";
+import SwitcherThree from "@/components/Switchers/SwitcherThree";
 import SwitcherTwo from "@/components/Switchers/SwitcherTwo";
 import DatePickerTwo from "@/components/FormElements/DatePicker/DatePickerTwo";
 import DatePickerOne from "@/components/FormElements/DatePicker/DatePickerOne";
@@ -75,7 +75,7 @@ const FormElements = () => {
             <div className="flex flex-col gap-5.5 p-6.5">
               <SwitcherOne />
               <SwitcherTwo />
-              {/* <SwitcherThree /> */}
+              <SwitcherThree />
               <SwitcherFour />
             </div>
           </div>

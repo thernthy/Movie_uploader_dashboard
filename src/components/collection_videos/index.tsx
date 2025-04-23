@@ -44,7 +44,7 @@ const CollectionPage: React.FC<dataProp> = ({
     { video_id: string; status: string }[]
   >([]);
   const [selectedCollection, setSelectedCollection] = useState<string | null>(
-    null,
+    null
   );
   const [isSelecting, setIsSelecting] = useState(false);
 
@@ -58,7 +58,7 @@ const CollectionPage: React.FC<dataProp> = ({
             headers: {
               "api-key": `${process.env.NEXT_PUBLIC_ACCESS_GET_API_KEY}`,
             },
-          },
+          }
         );
         if (response.ok) {
           const data = await response.json();
@@ -76,7 +76,7 @@ const CollectionPage: React.FC<dataProp> = ({
 
   const handlePageChange = (
     event: React.ChangeEvent<unknown>,
-    page: number,
+    page: number
   ) => {
     setCurrentPage(page); // Update the current page
   };
@@ -91,7 +91,7 @@ const CollectionPage: React.FC<dataProp> = ({
             headers: {
               "api-key": `${process.env.NEXT_PUBLIC_ACCESS_GET_API_KEY}`,
             },
-          },
+          }
         );
         if (response.ok) {
           const data = await response.json();
@@ -114,7 +114,7 @@ const CollectionPage: React.FC<dataProp> = ({
             headers: {
               "api-key": `${process.env.NEXT_PUBLIC_ACCESS_GET_API_KEY}`,
             },
-          },
+          }
         );
         if (response.ok) {
           const data = await response.json();
@@ -136,13 +136,13 @@ const CollectionPage: React.FC<dataProp> = ({
   };
   // Function to toggle selection
   const toggleSelection = (video: Video) => {
-    const newData = { video_id: video.video_id, status: video.video_status };
+    const newData = { video_id: video.video_id, status: video.videos_status };
     // Check if the video is already selected
     if (!selectedData.find((item) => item.video_id === video.video_id)) {
       setSelectedData((prevData) => [...prevData, newData]);
     } else {
       setSelectedData((prevData) =>
-        prevData.filter((item) => item.video_id !== video.video_id),
+        prevData.filter((item) => item.video_id !== video.video_id)
       );
     }
   };
@@ -194,7 +194,7 @@ const CollectionPage: React.FC<dataProp> = ({
                 "api-key": `${process.env.NEXT_PUBLIC_ACCESS_POST_API_KEY}`,
               },
               body: JSON.stringify({ collection_id: selectedCollection }),
-            },
+            }
           );
 
           // Check if the response was successful
@@ -202,7 +202,7 @@ const CollectionPage: React.FC<dataProp> = ({
             console.log(`Video ${video.video_id} successfully updated.`);
           } else {
             console.error(
-              `Error updating video ${video.video_id}: ${response.statusText}`,
+              `Error updating video ${video.video_id}: ${response.statusText}`
             );
           }
         }
@@ -232,7 +232,7 @@ const CollectionPage: React.FC<dataProp> = ({
               headers: {
                 "api-key": `${process.env.NEXT_PUBLIC_ACCESS_POST_API_KEY}`,
               },
-            },
+            }
           );
 
           // Check if the response was successful
@@ -240,7 +240,7 @@ const CollectionPage: React.FC<dataProp> = ({
             console.log(`Video ${video.video_id} successfully deleted.`);
           } else {
             console.error(
-              `Error deleting video ${video.video_id}: ${response.statusText}`,
+              `Error deleting video ${video.video_id}: ${response.statusText}`
             );
           }
         }
@@ -262,7 +262,7 @@ const CollectionPage: React.FC<dataProp> = ({
       <div className="grid grid-cols-1 gap-2 md:grid-cols-1">
         <div className="w-full rounded-md bg-white dark:bg-meta-4">
           <div className="sticky top-0 z-20 mb-2 flex  w-full items-center justify-between">
-            <div className="inline-flex w-full items-center gap-2 rounded-md bg-white p-1.5 dark:bg-meta-4">
+            <div className="inline-flex gap-2 items-center w-full rounded-md bg-white p-1.5 dark:bg-meta-4">
               {collections.map((collection) =>
                 collection.collection_id == collection_id ? (
                   <button
@@ -273,16 +273,15 @@ const CollectionPage: React.FC<dataProp> = ({
                     <span> files </span>
                     <span
                       className={`${
-                        collection.total_files && collection.total_files > 0
+                        collection.total_files < 0
                           ? "text-emerald-300"
                           : "text-red-500"
                       }`}
                     >
-                      {collection.total_files ?? 0}{" "}
-                      {/* Display 0 if undefined */}
+                      {collection.total_files}
                     </span>
                   </button>
-                ) : null,
+                ) : null
               )}
               <button className=" rounded bg-white px-3 py-1 text-xs font-medium text-black shadow-card hover:bg-white hover:shadow-card dark:bg-boxdark dark:text-white dark:hover:bg-boxdark">
                 <Pagination
@@ -514,7 +513,7 @@ const CollectionPage: React.FC<dataProp> = ({
                     key={index + 1}
                     seleted={
                       selectedData.some(
-                        (selected) => selected.video_id === item.video_id,
+                        (selected) => selected.video_id === item.video_id
                       )
                         ? true
                         : false

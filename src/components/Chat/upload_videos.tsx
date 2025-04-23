@@ -3,7 +3,6 @@ import folder from "../../asset/folder-download.png";
 import "./upload.css";
 import del from "../../assets/x-mark.png";
 import UploadFileProgressBarCircle from "../progressBar/upload_file_progress";
-import Image from "next/image";
 
 type UploadVideoFormProps = {
   handleAddVideo: () => void;
@@ -19,7 +18,7 @@ const UploadingVideos: React.FC<UploadVideoFormProps> = ({
 }) => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [uploadProgress, setUploadProgress] = useState<Record<string, number>>(
-    {},
+    {}
   );
   const [response, setResponse] = useState<UploadResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -43,7 +42,7 @@ const UploadingVideos: React.FC<UploadVideoFormProps> = ({
             AccessKey: "ab5cc9e7-fc7d-4793-a05c089b0b48-e6e2-4f11", // Replace with actual API key
           },
           body: JSON.stringify(createVideoData),
-        },
+        }
       );
 
       const data = await response.json();
@@ -54,37 +53,11 @@ const UploadingVideos: React.FC<UploadVideoFormProps> = ({
       console.log(`Created video entry ID: ${data.guid}`); // Debugging line
       return data.guid;
     } catch (error) {
-      console.error(`Error creating video entry: ${error}`);
+      console.error(`Error creating video entry: ${error.message}`);
       throw error;
     }
   };
-  const handleFileInputChange = async (
-    event: ChangeEvent<HTMLInputElement>,
-  ) => {
-    if (event.target.files) {
-      const files = Array.from(event.target.files).filter(
-        (file) => file.type === "video/mp4" || file.type === "video/x-matroska",
-      );
 
-      setSelectedFiles((prevFiles) => [...prevFiles, ...files]);
-
-      for (const file of files) {
-        setUploadProgress((prevProgress) => ({
-          ...prevProgress,
-          [file.name]: 0,
-        }));
-
-        try {
-          const videoId = await createVideoEntry(file);
-          if (videoId) {
-            uploadVideoFile(file, videoId, file.name);
-          }
-        } catch (error) {
-          console.error(`Failed to upload file: ${file.name}`);
-        }
-      }
-    }
-  };
   const uploadVideoFile = (file: File, videoId: string, title: string) => {
     const xhr = new XMLHttpRequest();
     xhr.withCredentials = false; // Try without credentials
@@ -121,20 +94,20 @@ const UploadingVideos: React.FC<UploadVideoFormProps> = ({
                 "Content-Type": "application/json",
                 "api-key": "123456",
               },
-            },
+            }
           );
 
           if (!createVideoResponse.ok) {
             throw new Error(
-              `Failed to create video entry: ${createVideoResponse.statusText}`,
+              `Failed to create video entry: ${createVideoResponse.statusText}`
             );
           }
 
           const createVideoData = await createVideoResponse.json();
           handleAddVideo();
         } catch (error) {
-          console.error(`Error creating video entry: ${error}`);
-          setError(`Error creating video entry: ${error}`);
+          console.error(`Error creating video entry: ${error.message}`);
+          setError(`Error creating video entry: ${error.message}`);
         }
       } else {
         console.error(`Upload failed: ${xhr.statusText}`);
@@ -149,12 +122,12 @@ const UploadingVideos: React.FC<UploadVideoFormProps> = ({
 
     xhr.open(
       "PUT",
-      `https://video.bunnycdn.com/library/293721/videos/${videoId}`,
+      `https://video.bunnycdn.com/library/293721/videos/${videoId}`
     );
     xhr.setRequestHeader("Content-Type", "video/mp4");
     xhr.setRequestHeader(
       "AccessKey",
-      "ab5cc9e7-fc7d-4793-a05c089b0b48-e6e2-4f11",
+      "ab5cc9e7-fc7d-4793-a05c089b0b48-e6e2-4f11"
     ); // Replace with actual API key
 
     setXhrInstances((prevInstances) => ({
@@ -163,6 +136,34 @@ const UploadingVideos: React.FC<UploadVideoFormProps> = ({
     }));
 
     xhr.send(file);
+  };
+
+  const handleFileInputChange = async (
+    event: ChangeEvent<HTMLInputElement>
+  ) => {
+    if (event.target.files) {
+      const files = Array.from(event.target.files).filter(
+        (file) => file.type === "video/mp4" || file.type === "video/x-matroska"
+      );
+
+      setSelectedFiles((prevFiles) => [...prevFiles, ...files]);
+
+      for (const file of files) {
+        setUploadProgress((prevProgress) => ({
+          ...prevProgress,
+          [file.name]: 0,
+        }));
+
+        try {
+          const videoId = await createVideoEntry(file);
+          if (videoId) {
+            uploadVideoFile(file, videoId);
+          }
+        } catch (error) {
+          console.error(`Failed to upload file: ${file.name}`);
+        }
+      }
+    }
   };
 
   const cancelUpload = (index: number) => {
@@ -230,12 +231,10 @@ const UploadingVideos: React.FC<UploadVideoFormProps> = ({
                   value={uploadProgress[file.name]}
                 />
               )}
-              <Image
-                src="https://cdn-icons-png.flaticon.com/128/7466/7466139.png"
+              <img
+                src={`https://cdn-icons-png.flaticon.com/128/7466/7466139.png`}
                 alt="Cancel Upload"
-                width={40} // or adjust size as needed
-                height={40}
-                className="h-10 cursor-pointer"
+                className="h-10"
                 onClick={() => cancelUpload(index)}
               />
             </div>
