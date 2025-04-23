@@ -13,13 +13,13 @@
     "@emotion/styled": "^11.13.0",
     "@mui/icons-material": "^6.1.1",
     "@mui/material": "^6.1.1",
-    "@types/next-auth": "^3.15.0",
     "apexcharts": "^3.53.0",
     "busboy": "^1.6.0",
     "check-disk-space": "^3.4.0",
     "express": "^4.19.2",
     "flatpickr": "^4.6.13",
     "formidable": "^3.5.1",
+    "glob": "^10.4.5",
     "hls.js": "^1.5.15",
     "jsvectormap": "^1.6.0",
     "multiparty": "^4.2.3",
@@ -47,6 +47,7 @@
     "postcss": "^8",
     "prettier": "^3.2.5",
     "prettier-plugin-tailwindcss": "^0.5.11",
+    "rimraf": "^5.0.10",
     "tailwindcss": "^3.4.1",
     "typescript": "^5.6.3"
   }
