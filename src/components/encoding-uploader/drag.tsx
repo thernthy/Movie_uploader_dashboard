@@ -12,9 +12,11 @@ const UploadEncodingZip: React.FC<componentProp> = ({ handleRefresh }) => {
   const [uploadProgress, setUploadProgress] = useState<{
     [id: string]: number;
   }>({});
+  const [uploadStatus, setUploadStatus] = useState<{ [id: string]: string }>({});
   const [xhrInstances, setXhrInstances] = useState<{
     [id: string]: XMLHttpRequest;
   }>({});
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const timestamp = Date.now();
   const date = new Date(timestamp);
@@ -22,84 +24,117 @@ const UploadEncodingZip: React.FC<componentProp> = ({ handleRefresh }) => {
 
   const uploadFile = (file: File, uniqueID: string) => {
     console.log(`Generated Unique ID: ${uniqueID}`);
-
+  
     const formData = new FormData();
     formData.append("videos[]", file);
-
-    setUploadProgress((prevProgress) => ({
-      ...prevProgress,
+  
+    setUploadProgress((prev) => ({
+      ...prev,
       [uniqueID]: 0,
     }));
-
+  
+    setUploadStatus((prev) => ({
+      ...prev,
+      [uniqueID]: "uploading", // uploading | processing | done | error
+    }));
+  
     const xhr = new XMLHttpRequest();
     const maxRetries = 3;
     let attempt = 0;
-
+  
     const attemptUpload = () => {
       attempt++;
-      const retryDelay = Math.pow(2, attempt - 1) * 1000; // Exponential backoff
-
+      const retryDelay = Math.pow(2, attempt - 1) * 1000;
+  
       setTimeout(() => {
-        xhr.open(
-          "POST",
-          "https://encodingzipuploader.m27.shop",
-          //"https://encodingzipuploade.wwdqwii0qsas4gjzuwlpxfrosi7zxjx4tyw51io.store"
-        ); //https://encodingzipuploader.m27.shop/
+        xhr.open("POST", "https://encodingzipuploader.m27.shop");
         xhr.setRequestHeader("API-Key", "thernthy862003");
         xhr.setRequestHeader("Accept", "application/json");
         xhr.send(formData);
       }, retryDelay);
     };
-
+  
     xhr.upload.addEventListener("progress", (event) => {
       if (event.lengthComputable) {
         const progress = Math.round((event.loaded / event.total) * 100);
-        setUploadProgress((prevProgress) => ({
-          ...prevProgress,
+        setUploadProgress((prev) => ({
+          ...prev,
           [uniqueID]: progress,
+        }));
+  
+        if (progress === 100) {
+          setUploadStatus((prev) => ({
+            ...prev,
+            [uniqueID]: "processing", // file sent, now server is working
+          }));
+        }
+      }
+    });
+  
+    xhr.addEventListener("load", () => {
+      try {
+        const jsonResponse = JSON.parse(xhr.responseText);
+  
+        if (xhr.status === 200) {
+          console.log(`✅ ${uniqueID}: Upload + processing successful`);
+          setUploadStatus((prev) => ({
+            ...prev,
+            [uniqueID]: "done",
+          }));
+          handleRefresh();
+        } else if (xhr.status === 207) {
+          const fileResult = jsonResponse.results?.find((f:any) => f.file === file.name);
+          if (fileResult?.status === "success") {
+            setUploadStatus((prev) => ({
+              ...prev,
+              [uniqueID]: "done",
+            }));
+          } else {
+            setUploadStatus((prev) => ({
+              ...prev,
+              [uniqueID]: "error",
+            }));
+          }
+        } else {
+          throw new Error("Unexpected server response");
+        }
+      } catch (err) {
+        console.error(`❌ ${uniqueID}: Response parsing failed`, err);
+        setUploadStatus((prev) => ({
+          ...prev,
+          [uniqueID]: "error",
         }));
       }
     });
-
-    xhr.addEventListener("load", () => {
-      if (xhr.status === 200) {
-        console.log(`Upload successful for ${uniqueID}`);
-        handleRefresh();
-      } else if (attempt < maxRetries) {
-        console.error(
-          `Upload failed for ${uniqueID}: ${xhr.statusText}. Retrying... (${attempt})`,
-        );
-        attemptUpload();
-      } else {
-        console.error(
-          `Upload failed for ${uniqueID} after ${attempt} attempts`,
-        );
-      }
-    });
-
+  
     xhr.addEventListener("error", () => {
       if (attempt < maxRetries) {
-        console.error(`Upload error for ${uniqueID}. Retrying... (${attempt})`);
+        console.warn(`⚠️ ${uniqueID}: Retrying upload (attempt ${attempt})`);
         attemptUpload();
       } else {
-        console.error(`Upload error for ${uniqueID} after ${attempt} attempts`);
+        setUploadStatus((prev) => ({
+          ...prev,
+          [uniqueID]: "error",
+        }));
       }
     });
-
+  
     xhr.addEventListener("timeout", () => {
-      console.error(`Upload timed out for ${uniqueID}`);
+      console.error(`⏰ ${uniqueID}: Upload timed out`);
+      setUploadStatus((prev) => ({
+        ...prev,
+        [uniqueID]: "error",
+      }));
     });
-
+  
     xhr.addEventListener("loadend", () => {
-      setXhrInstances((prevInstances) => {
-        const { [uniqueID]: removed, ...rest } = prevInstances;
+      setXhrInstances((prev) => {
+        const { [uniqueID]: removed, ...rest } = prev;
         return rest;
       });
     });
-
-    xhr.timeout = 86400000; // 24 hours in milliseconds
-
-    // Initial attempt
+  
+    xhr.timeout = 86400000; // 24 hours
     attemptUpload();
   };
 
@@ -221,37 +256,54 @@ const UploadEncodingZip: React.FC<componentProp> = ({ handleRefresh }) => {
           className="uploaded xxl:grid-cols-3 grid h-full w-full place-items-center gap-1 rounded-md border-black md:grid-cols-1 xl:grid-cols-3"
           style={{ overflowY: "scroll", scrollbarWidth: "none" }}
         >
-          {Object.keys(selectedFiles).map((fileId: string) => {
-            const file = selectedFiles[fileId];
+            {Object.keys(selectedFiles).map((fileId: string) => {
+              const file = selectedFiles[fileId];
+              const progress = uploadProgress[fileId] || 0;
+              const status = uploadStatus[fileId] || "waiting"; // default status
 
-            return (
-              <div
-                key={fileId} // Use fileId as the unique key
-                className="bg-gray-300 border-gray-700 relative w-full max-w-sm rounded border border-meta-4 p-6 shadow"
-              >
-                <Image
-                  src="https://cdn-icons-png.flaticon.com/128/16769/16769089.png"
-                  className="w-12"
-                  alt=""
-                />
-                <h6 className="mb-2 truncate text-xl font-semibold tracking-tight text-black dark:text-white">
-                  {file.name}
-                </h6>
-                <div className="bg-gray-200 dark:bg-gray-700 h-2.5 w-full rounded-full border border-meta-4">
-                  <div
-                    className="h-2 rounded-full bg-orange-500"
-                    style={{
-                      width: `${uploadProgress[fileId] || 0}%`,
-                    }}
-                  ></div>
+              return (
+                <div
+                  key={fileId}
+                  className="bg-gray-300 border-gray-700 relative w-full max-w-sm rounded border border-meta-4 p-6 shadow"
+                >
+                  <Image
+                    src="https://cdn-icons-png.flaticon.com/128/16769/16769089.png"
+                    className="w-12"
+                    alt="File Icon"
+                  />
+                  <h6 className="mb-2 truncate text-xl font-semibold tracking-tight text-black dark:text-white">
+                    {file.name}
+                  </h6>
+
+                  {/* Progress Bar */}
+                  <div className="bg-gray-200 dark:bg-gray-700 h-2.5 w-full rounded-full border border-meta-4 mb-2">
+                    <div
+                      className={`h-2 rounded-full ${
+                        status === "done"
+                          ? "bg-green-500"
+                          : status === "error"
+                          ? "bg-red-500"
+                          : status === "processing"
+                          ? "bg-yellow-500"
+                          : "bg-orange-500"
+                      }`}
+                      style={{
+                        width: `${progress}%`,
+                      }}
+                    ></div>
+                  </div>
+
+                  {/* Progress & Status Text */}
+                  <p className="text-center text-sm font-medium text-gray-800 dark:text-gray-200">
+                    {status === "uploading" && `Uploading... ${progress}%`}
+                    {status === "processing" && `Processing on server...`}
+                    {status === "done" && `✅ Upload complete`}
+                    {status === "error" && `❌ Upload failed`}
+                    {status === "waiting" && `Waiting to start`}
+                  </p>
                 </div>
-                <p className="text-center">
-                  {file.name} - Progress: {uploadProgress[fileId] || 0}%
-                </p>{" "}
-                {/* Fixed closing tag */}
-              </div>
-            );
-          })}
+              );
+            })}
         </div>
       </div>
     </>
