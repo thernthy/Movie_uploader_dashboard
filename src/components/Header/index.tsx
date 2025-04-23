@@ -13,9 +13,8 @@ const Header = (props: {
   const router = useRouter();
   const [query, setQuery] = useState<string>(""); // State for the search query
 
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Navigate to the search page with the query parameter
     router.push(`/search?query=${encodeURIComponent(query)}`);
   };
 

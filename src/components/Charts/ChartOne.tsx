@@ -349,15 +349,27 @@ const ChartOne: React.FC<ChartOneProps> = ({
   }, [videos]);
 
   const handleRedownloading = async (video_id: string) => {
-    await fetch(
-      `${process.env.NEXT_PUBLIC_BAS_API_DOMAIN}/api_poster/bunny-encoded-file-downloading/${video_id}`,
-      {
-        method: "GET",
-        headers: {
-          "api-key": `${process.env.NEXT_PUBLIC_ACCESS_POST_API_KEY}`,
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BAS_API_DOMAIN}/api_poster/bunny-encoded-file-downloading/${video_id}`,
+        {
+          method: "GET",
+          headers: {
+            "api-key": `${process.env.NEXT_PUBLIC_ACCESS_POST_API_KEY}`,
+          },
         },
-      },
-    );
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to trigger redownloading.");
+      }
+
+      const data = await response.json();
+      console.log("Redownload triggered:", data);
+      handleAddVideo(); // Refresh video list
+    } catch (error) {
+      console.error(`Failed to redownload video ${video_id}:`, error);
+    }
   };
 
   const handleDetail = (

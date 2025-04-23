@@ -3,7 +3,7 @@ import folder from "../../asset/folder-download.png";
 import "./upload.css";
 import del from "../../assets/x-mark.png";
 import UploadFileProgressBarCircle from "../progressBar/upload_file_progress";
-
+import Image from "next/image";
 type UploadVideoFormProps = {
   handleAddVideo: () => void;
 };
@@ -53,7 +53,7 @@ const UploadingVideos: React.FC<UploadVideoFormProps> = ({
       console.log(`Created video entry ID: ${data.guid}`); // Debugging line
       return data.guid;
     } catch (error) {
-      console.error(`Error creating video entry: ${error.message}`);
+      console.error(`Error creating video entry: ${error}`);
       throw error;
     }
   };
@@ -106,8 +106,8 @@ const UploadingVideos: React.FC<UploadVideoFormProps> = ({
           const createVideoData = await createVideoResponse.json();
           handleAddVideo();
         } catch (error) {
-          console.error(`Error creating video entry: ${error.message}`);
-          setError(`Error creating video entry: ${error.message}`);
+          console.error(`Error creating video entry: ${error}`);
+          setError(`Error creating video entry: ${error}`);
         }
       } else {
         console.error(`Upload failed: ${xhr.statusText}`);
@@ -157,7 +157,7 @@ const UploadingVideos: React.FC<UploadVideoFormProps> = ({
         try {
           const videoId = await createVideoEntry(file);
           if (videoId) {
-            uploadVideoFile(file, videoId);
+            uploadVideoFile(file, videoId, file.name);
           }
         } catch (error) {
           console.error(`Failed to upload file: ${file.name}`);
@@ -231,7 +231,7 @@ const UploadingVideos: React.FC<UploadVideoFormProps> = ({
                   value={uploadProgress[file.name]}
                 />
               )}
-              <img
+              <Image
                 src={`https://cdn-icons-png.flaticon.com/128/7466/7466139.png`}
                 alt="Cancel Upload"
                 className="h-10"

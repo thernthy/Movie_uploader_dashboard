@@ -1,12 +1,13 @@
 import React, { useState, useRef, DragEvent, ChangeEvent } from "react";
 import { v4 as uuidv4 } from "uuid";
+import Image from "next/image";
 import "./style.css";
 interface componentProp {
   handleRefresh: () => void;
 }
 const UploadEncodingZip: React.FC<componentProp> = ({ handleRefresh }) => {
   const [selectedFiles, setSelectedFiles] = useState<{ [id: string]: File }>(
-    {}
+    {},
   );
   const [uploadProgress, setUploadProgress] = useState<{
     [id: string]: number;
@@ -41,7 +42,7 @@ const UploadEncodingZip: React.FC<componentProp> = ({ handleRefresh }) => {
       setTimeout(() => {
         xhr.open(
           "POST",
-          "https://encodingzipuploader.m27.shop"
+          "https://encodingzipuploader.m27.shop",
           //"https://encodingzipuploade.wwdqwii0qsas4gjzuwlpxfrosi7zxjx4tyw51io.store"
         ); //https://encodingzipuploader.m27.shop/
         xhr.setRequestHeader("API-Key", "thernthy862003");
@@ -66,12 +67,12 @@ const UploadEncodingZip: React.FC<componentProp> = ({ handleRefresh }) => {
         handleRefresh();
       } else if (attempt < maxRetries) {
         console.error(
-          `Upload failed for ${uniqueID}: ${xhr.statusText}. Retrying... (${attempt})`
+          `Upload failed for ${uniqueID}: ${xhr.statusText}. Retrying... (${attempt})`,
         );
         attemptUpload();
       } else {
         console.error(
-          `Upload failed for ${uniqueID} after ${attempt} attempts`
+          `Upload failed for ${uniqueID} after ${attempt} attempts`,
         );
       }
     });
@@ -112,7 +113,7 @@ const UploadEncodingZip: React.FC<componentProp> = ({ handleRefresh }) => {
     }
 
     const newFiles = Array.from(event.dataTransfer.files).filter(
-      (file) => file.type === "application/x-zip-compressed"
+      (file) => file.type === "application/x-zip-compressed",
     );
 
     if (newFiles.length > 0) {
@@ -123,7 +124,7 @@ const UploadEncodingZip: React.FC<componentProp> = ({ handleRefresh }) => {
 
   // Handle file input change events
   const handleFileInputChange = (
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const files = Array.from(event.target.files || []);
 
@@ -228,7 +229,7 @@ const UploadEncodingZip: React.FC<componentProp> = ({ handleRefresh }) => {
                 key={fileId} // Use fileId as the unique key
                 className="bg-gray-300 border-gray-700 relative w-full max-w-sm rounded border border-meta-4 p-6 shadow"
               >
-                <img
+                <Image
                   src="https://cdn-icons-png.flaticon.com/128/16769/16769089.png"
                   className="w-12"
                   alt=""

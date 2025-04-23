@@ -4,17 +4,17 @@ import { VideoProvider } from "@/app/appContext/videoDetail";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import SearchPage from "@/components/searchPage";
 import React, { useEffect, useState } from "react";
-import { useSearchParams, useRouter } from "next/navigation"; // Ensure these imports are from next/navigation
+import { useSearchParams, useRouter } from "next/navigation";
 import { Video } from "@/components/Charts/ChartOne";
 import Loading from "./loading";
 
 const Page: React.FC = () => {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(true); // Add loading state
+  const [isLoading, setIsLoading] = useState(true);
   const searchParams = useSearchParams();
-  const query = searchParams.get("query") || ""; // Get the search query
-  const pageParam = searchParams.get("_page") || 1; // Get the page query parameter
-  const initialPage = pageParam ? parseInt(pageParam, 10) : 1;
+  const query = searchParams?.get("query") || ""; // Optional chaining
+  const pageParam = searchParams?.get("_page") || "1";
+  const initialPage = parseInt(pageParam, 10);
 
   const [results, setResults] = useState<Video[]>([]); // Ensure proper type for results
   const [current_page, setPage] = useState<number>(initialPage);
