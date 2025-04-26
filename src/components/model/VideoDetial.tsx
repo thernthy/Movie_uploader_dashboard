@@ -29,82 +29,33 @@ const VideoDetail: React.FC<VideoDetailProps> = ({ refresh, setRefresh }) => {
     return () => clearTimeout(timeout); // Cleanup on unmount
   }, [showMessage, message]);
   useEffect(() => {
-    async function setupVideo() {
-      if (!video || !video.video_play_url || !videoRef.current) return;
+    setTempTitle(video?.title || "");
+    setTitle(video?.title || "");
+    if (videoRef.current && video?.video_play_url) {
+      const hls = new Hls();
 
-      setTempTitle(video.title);
-      setTitle(video.title);
-
-      const original_url = video.video_play_url;
-      const video_url = original_url.replace(
-        "https://m27player.b-cdn.net/",
-        "https://m28tv.b-cdn.net/player-logs/",
-      );
-
-      async function fetchSignedUrl() {
-        try {
-          const response = await fetch(video_url, {
-            method: "GET",
-            headers: {
-              Accessaplaykey: "kyF34bbnYWn2ATwyESN4sZuX6j8U6RHg",
-            },
-          });
-          if (!response.ok) throw new Error("Failed to fetch signed URL");
-          const data = await response.json();
-          return data.signed_url;
-        } catch (error) {
-          console.error("Error fetching signed URL:", error);
-          return null;
-        }
-      }
-
-      const signedUrl = await fetchSignedUrl();
-      if (!signedUrl) {
-        console.error("No signed URL available.");
-        return;
-      }
-
-      const videoElement = videoRef.current;
-
+      // Check if HLS is supported
       if (Hls.isSupported()) {
-        const hls = new Hls();
-        hls.loadSource(signedUrl);
-        hls.attachMedia(videoElement);
+        hls.loadSource(video.video_play_url);
+        hls.attachMedia(videoRef.current);
         hls.on(Hls.Events.MANIFEST_PARSED, () => {
-          videoElement
-            .play()
-            .catch((err) => console.error("HLS play error:", err));
+          videoRef.current?.play();
         });
 
-        // Clean up hls on unmount
+        // Clean up on unmount
         return () => {
           hls.destroy();
         };
-      } else if (videoElement.canPlayType("application/vnd.apple.mpegurl")) {
-        videoElement.src = signedUrl;
-        videoElement.addEventListener(
-          "loadedmetadata",
-          () => {
-            videoElement
-              .play()
-              .catch((err) => console.error("Native play error:", err));
-          },
-          { once: true },
-        );
-      } else {
-        console.warn("This device does not support HLS.");
+      } else if (
+        videoRef.current.canPlayType("application/vnd.apple.mpegurl")
+      ) {
+        videoRef.current.src = video.video_play_url;
+        videoRef.current.addEventListener("loadedmetadata", () => {
+          videoRef.current?.play();
+        });
       }
     }
-
-    const cleanup = setupVideo();
-
-    // React expects cleanup to be returned
-    return () => {
-      if (cleanup instanceof Function) {
-        cleanup();
-      }
-    };
-  }, [video]);
+  }, [video, video?.video_play_url]);
 
   if (!isModalVisible || !video) {
     return null; // Don't render anything if the modal is not visible or video is null
