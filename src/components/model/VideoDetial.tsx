@@ -66,6 +66,11 @@ const VideoDetail: React.FC<VideoDetailProps> = ({ refresh, setRefresh }) => {
 
       const videoElement = videoRef.current;
 
+      // Add error listener
+      videoElement.onerror = (e) => {
+        console.error("Video playback error:", e);
+      };
+
       if (Hls.isSupported()) {
         const hls = new Hls();
         hls.loadSource(signedUrl);
@@ -76,7 +81,6 @@ const VideoDetail: React.FC<VideoDetailProps> = ({ refresh, setRefresh }) => {
             .catch((err) => console.error("HLS play error:", err));
         });
 
-        // Clean up hls on unmount
         return () => {
           hls.destroy();
         };
@@ -98,7 +102,6 @@ const VideoDetail: React.FC<VideoDetailProps> = ({ refresh, setRefresh }) => {
 
     const cleanup = setupVideo();
 
-    // React expects cleanup to be returned
     return () => {
       if (cleanup instanceof Function) {
         cleanup();
