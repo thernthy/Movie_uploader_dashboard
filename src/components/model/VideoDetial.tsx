@@ -194,6 +194,9 @@ const VideoDetail: React.FC<VideoDetailProps> = ({ refresh, setRefresh }) => {
             ref={videoRef}
             className="w-full max-w-115 rounded-md md:w-96 lg:xl:w-115 xl:w-115"
             height="360"
+            playsInline
+            muted
+            autoPlay
             controls
           >
             {/* No need to add source here; it's handled by Hls.js */}
